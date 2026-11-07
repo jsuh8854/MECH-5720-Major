@@ -15,3 +15,5 @@ Install requirements with `pip install -r requirements.txt`.
 `src/find_fix_pattern.py` can be used to determine the fixed-pattern using black-frame captures in `fixed_pattern`.
 
 `src/noise_gen.py` can be used to generate noise patterns to use as the background.
+
+`src/imaging.py` to perform analysis, `METHOD` can be changed to perform different analysis.
