@@ -407,7 +407,7 @@ def plot_displacement_spread(
     ax.legend(fontsize=legend_size, loc="best")
 
     fig.savefig(
-        out_dir / "displacement_spread.png",
+        out_dir / f"displacement_spread_{TEMP_METHOD}.png",
         dpi=300,
         bbox_inches="tight",
     )
@@ -543,7 +543,7 @@ def plot_temperature_calibration(
     ax.legend(fontsize=legend_size, loc="upper left")
 
     fig.savefig(
-        out_dir / "temperature_calibration.png",
+        out_dir / f"temperature_calibration_{TEMP_METHOD}.png",
         dpi=300,
         bbox_inches="tight",
     )
@@ -585,9 +585,7 @@ def wdef_analysis(
 def temperature_analysis(
     ambient: list[np.ndarray],
     heat: list[np.ndarray],
-    heat_names: list[str],
-    perform,
-    settings,
+    heat_names: list[str]
 ) -> None:
     """
     Estimate hot-plate temperatures from displacement-magnitude images.
@@ -596,13 +594,22 @@ def temperature_analysis(
     HEAT_GROUPS entry as the maximum-temperature calibration point.
     """
 
+    perform = perform_tv_l1 if TEMP_METHOD == "tvl1" else perform_window_deform
+    settings = make_tvl1_settings() if TEMP_METHOD == "tvl1" else make_wdef_settings()
+
     # Assign heat images to groups.
     group_of = temp.build_heat_groups(heat, heat_names, HEAT_GROUPS)
 
     # Measure ambient noise and heat-image displacement spread.
     noise_stds, noise = temp.measure_noise_floor(
-        perform, settings, ambient, NOISE_TEST_FRAMES
+        perform,
+        settings,
+        ambient,
+        NOISE_TEST_FRAMES
     )
+
+    print(f"Noise floor measured as: {noise}")
+
     stds, indices = temp.measure_heat_images(
         ambient, heat, heat_names, group_of, perform, settings
     )
@@ -673,7 +680,5 @@ if __name__ == "__main__":
         temperature_analysis(
             ambient_stack,
             heat_stack,
-            heat_file_names,
-            perform_tv_l1 if TEMP_METHOD == "tvl1" else perform_window_deform,
-            make_tvl1_settings() if TEMP_METHOD == "tvl1" else make_wdef_settings()
+            heat_file_names
         )

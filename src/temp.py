@@ -44,9 +44,6 @@ def ambient_noise_stds(
     # pylint:disable=line-too-long
 
     test_frames, reference = ambient[:noise_test_frames], ambient[noise_test_frames:]
-    print(
-        f"[temp] noise floor: {noise_test_frames} ambient test frames vs reference of {len(reference)} frames"
-    )
     flows = perform(reference, test_frames, settings)
     return [magnitude_std(f) for f in flows], len(reference)
 
